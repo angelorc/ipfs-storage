@@ -6,34 +6,37 @@ services:
       - IPFS_PATH=/data/ipfs
     volumes:
       - ./.data/ipfs:/data/ipfs
-    # ports:
-    #   - "4001:4001" # ipfs swarm
-    #   - "5001:5001" # ipfs api
-    #   - "8080:8080" # ipfs gateway
+    ports:
+      - "4001:4001" # ipfs swarm
+      - "5001:5001" # ipfs api
+      - "8080:8080" # ipfs gateway
     restart: always
   
-  postgres:
-    container_name: postgres
-    image: postgres:15
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: postgres
-    volumes:
-      - ./.data/postgres:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
-    restart: always
+  # postgres:
+  #   container_name: postgres
+  #   image: postgres:15
+  #   environment:
+  #     POSTGRES_USER: postgres
+  #     POSTGRES_PASSWORD: postgres
+  #     POSTGRES_DB: postgres
+  #   volumes:
+  #     - ./.data/postgres:/var/lib/postgresql/data
+  #   ports:
+  #     - "5432:5432"
+  #   restart: always
     
   web-app:
     build:
       context: .
       dockerfile: ./Dockerfile
+    environment:
+      - NUXT_IPFS_GATEWAY=http://ipfs:8080
+      - NUXT_IPFS_API=http://ipfs:5001
     ports:
       - "3000:3000"
     volumes:
       - .:/src
     depends_on:
-      - postgres
+      #- postgres
       - ipfs
     restart: always
